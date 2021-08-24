@@ -31,7 +31,6 @@ const EntryButton = (props) => {
             <PrimaryButton label={'グループに入る'} onClick={() => {
                 // 登録の処理
                 setOpenError(true);
-                console.log(openError)
                 dispatch(preJoined(props.groupId, props.userId, tenMenbers))
                 }
             }

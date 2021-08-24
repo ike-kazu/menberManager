@@ -3,6 +3,10 @@
 メンバーを管理するためのReact製SPAアプリです。
 バックエンドにはFirebaseを使っています。
 フロントエンドはReact+Reduxです。
+デプロイしたものはこちらから
+https://ec-app-9e8b4.web.app/
+
+
 
 ## 環境
 ### アプリ作成

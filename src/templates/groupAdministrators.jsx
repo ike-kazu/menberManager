@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import { useDispatch } from 'react-redux';
 import {getGroupAdministrators, getGroupMenbers, getGroupMenberName, getGroupLeader} from '../reducks/groups/selectors';
 import { useSelector } from 'react-redux';
-import { GetGroup, addAdministrator, deleteAdministrator } from '../reducks/groups/operations';
+import { GetGroup, addAdministrator, deleteAdministrator, checkLeader } from '../reducks/groups/operations';
 import { TwoWayDialog, RejectButton, PrimaryButton, NegativeError } from '../components/UIkit';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -14,7 +14,7 @@ import { makeStyles } from '@material-ui/styles';
 // UI
 
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     root: {
       width: '40%',
       marginLeft: `30%`,
@@ -25,33 +25,30 @@ const useStyles = makeStyles((theme) => ({
     }
   }));
 
-const useGroupAdministrators = (props) => {
-
+const useGroupAdministrators = () => {
 
     const dispatch = useDispatch();
 
     // set action
     let id = window.location.pathname.split('/')[4];
-    console.log(id);
     useEffect(() => {
-        if(id !== undefined){
-            dispatch(GetGroup(id));
-        }
-    }, [id, dispatch]);
+        dispatch(GetGroup(id));
+        checkLeader();
+    }, [dispatch]);
 
 
+    // leader チェックをメソッドとしておいても良いのでは
     const selector = useSelector(state => state);
+    const leader = getGroupLeader(selector);
     const administrators = getGroupAdministrators(selector);
     const menbers = getGroupMenbers(selector);
     const menberName = getGroupMenberName(selector);
-    const leader = getGroupLeader(selector);
 
     // UI process
     const classes = useStyles();
     const [openDialogA, setOpenDialogA] = useState(false);
     const [openDialogB, setOpenDialogB] = useState(false);
     const [openError, setOpenError] = useState(false);
-    console.log(menbers)
 
     const error = (
         <NegativeError
@@ -101,8 +98,6 @@ const useGroupAdministrators = (props) => {
                                 dialogMesage={'このグループから管理者にすると、このメンバーは管理者としてのある一定の操作が可能となります。'}
                                 openDialog={openDialogB} setOpenDialog={setOpenDialogB}
                                 PositiveOnClick={() => {
-                                //setOpenError(true);
-                                console.log(menber);
                                 dispatch(addAdministrator(menber, id));
                           }} />
                         </>

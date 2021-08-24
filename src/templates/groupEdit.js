@@ -68,7 +68,6 @@ const useGroupEdit = () => {
                     <PrimaryButton
                         label={'グループを保存'}
                         onClick={() => {
-                            console.log(administrators)
                             dispatch(saveGroup(id, groupName, groupDescription, user_id, URLs, menbers, administrators, tenMenbers));
                         }}
                     />

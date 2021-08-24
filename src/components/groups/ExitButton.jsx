@@ -45,7 +45,6 @@ const ExitButton = (props) => {
                     if(!menbers.includes(props.userId)){
                         setOpenError(true);
                     }
-                    console.log(openError);
 
                     if(menbers.includes(props.userId)){
                         dispatch(exitGroup(props.groupId, props.userId, props.groupMenbers));
