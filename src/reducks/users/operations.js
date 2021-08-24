@@ -169,7 +169,6 @@ export const signOut = () => {
 
 export const joinGroup = (userId, groupId) => {
     return async () => {
-        console.log(userId)
        db.collection('users').doc(userId).get()
        .then((content) => {
            const joinMenberData = content.data();

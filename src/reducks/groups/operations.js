@@ -80,7 +80,6 @@ export const saveGroup = (id, groupName, groupDescription, user_id, URLs, menber
         dispatch(showLoadingAction('グループ情報を保存中...'));
         const timestamp = FirebaseTimestamp.now();
 
-        console.log(administrators)
         const data = {
             groupName: groupName,
             groupDescription: groupDescription,
@@ -152,8 +151,7 @@ export const exitGroup = (group_id, user_id, groupMenbers) => {
     // 関数を return すると止まる
     return async () => {
         const index = groupMenbers.indexOf(user_id);
-        groupMenbers.splice(index, 1)
-        console.log(groupMenbers);
+        groupMenbers.splice(index, 1);
         groupsRef.doc(group_id).update({menbers: groupMenbers})
         .then(
             db.collection('users').doc(user_id).get()
@@ -161,7 +159,6 @@ export const exitGroup = (group_id, user_id, groupMenbers) => {
                 const userGroups = content.data().groups;
                 const groupIndex = userGroups.indexOf(group_id);
                 userGroups.splice(groupIndex, 1);
-                console.log(userGroups)
                 db.collection('users').doc(user_id).update({groups: userGroups});
             })
         )
@@ -175,7 +172,6 @@ export const exitGroup = (group_id, user_id, groupMenbers) => {
 export const acceptUser = (index) => {
     return async (dispatch, getState) => {
         const groups = getState().groups;
-        console.log(groups);
         const groupsTenMenbers = groups.tenMenbers;
         const groupsTenMenberName = groups.tenMenberName;
         const joinMenbers = groupsTenMenbers[index];
@@ -271,9 +267,6 @@ export const deleteMenber = (index, inputMenberName) => {
             alert('このユーザーは管理者であるため削除できません')
         }else{
             menbers.splice(index, 1);
-            console.log(menbers)
-            console.log(groupId)
-            console.log(groups)
             db.collection('groups').doc(groupId).update({menbers: menbers});
             db.collection('users').doc(deleteUserId).get()
             .then(content => {
@@ -345,7 +338,6 @@ export const deleteTenMenber = (index, inputTenMenberName) => {
 
 export const addAdministrator = (menber, id) => {
     return async (dispatch, getState) => {
-            console.log(menber)
         const administrators = [...getState().groups.administrators, menber];
         groupsRef.doc(id).update({administrators: administrators})
         .then(() => {
@@ -392,5 +384,18 @@ export const deleteAdministrator = (menber, id) => {
                 tenMenberName: groups.tenMenberName,
             }))
         })
+    }
+}
+
+
+export const checkLeader = () => {
+    return async (dispatch, getState) => {
+        const userId = getState().users.id;
+        const leader = getState().groups.leader;
+        if(userId === leader){
+            return true;
+        }else{
+            dispatch(push('/'));
+        }
     }
 }

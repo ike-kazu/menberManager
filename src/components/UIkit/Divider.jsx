@@ -32,7 +32,6 @@ const Dividers = (props) => {
     setMenberName(props.menberName)
   }, [menberName])
 
-  console.log(props.menbers)
 
   const clear = (
     <PositiveError
@@ -45,7 +44,7 @@ const Dividers = (props) => {
   const error = (
   <NegativeError
   ErrorTitle={'この操作はできません'}
-  ErrorSentence={'メンバーの削除が完了しました'}
+  ErrorSentence={'このメンバーは管理者です。削除するには管理者から外してください。'}
   StrongErrorSentence={''}
   openError={openAdError} />
 )

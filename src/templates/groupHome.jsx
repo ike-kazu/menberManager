@@ -29,7 +29,6 @@ const useGroupHome = () => {
     const groupTenMenbers = getGroupTenMenbers(selector);
     const administrators = getGroupAdministrators(selector)
     const isAdministrator = administrators.includes(user_id);
-    console.log(selector)
 
     // <Home groupName={groupName} groupDescription={groupDescription} URLs={URLs} />
     // <EntryButton id={id} />
