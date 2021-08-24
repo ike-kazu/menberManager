@@ -4,6 +4,7 @@ import { deleteGroupAction } from '../groups/actions';
 import { fetchGroupAction } from './actions';
 import { getGroupMenberName } from './selectors';
 import {showLoadingAction, hideLoadingAction} from '../loading/actions';
+import { signInAction } from '../users/actions';
 
 
 const groupsRef = db.collection('groups');
@@ -76,50 +77,63 @@ export const GetGroup = (id) => {
 
 
 export const saveGroup = (id, groupName, groupDescription, user_id, URLs, menbers, administrators, tenMenbers) => {
-    return async (dispatch) => {
+    return async (dispatch, getState) => {
         dispatch(showLoadingAction('グループ情報を保存中...'));
         const timestamp = FirebaseTimestamp.now();
-
-        const data = {
-            groupName: groupName,
-            groupDescription: groupDescription,
-            administrators: [...administrators],
-            updated_at: timestamp,
-            leader: user_id,
-            URLs: URLs,
-            menbers: [...menbers],
-            tenMenbers: [...tenMenbers],
-        }
-
         if(id === undefined){
             const ref = groupsRef.doc();
             id = ref.id;
-            data.id = id;
-            data.created_at = timestamp;
-            data.menbers = [user_id];
-            data.administrators = [user_id];
-
-            dispatch(fetchGroupAction({
-                groupName: data.groupName,
-                groupDescription: data.groupDescription,
-                administrators: [...data.administrators],
-                created_at: data.created_at,
-                updated_at: data.updated_at,
-                id: data.id,
-                leader: data.leader,
-                URLs: data.URLs,
-                menbers: data.menbers,
-                tenMenbers: data.tenMenbers,
-            }));
+            const undated_at = timestamp;
+            const menbers = [user_id];
+            const administrators = [user_id];
+            const data = {
+                groupName: groupName,
+                groupDescription: groupDescription,
+                administrators: administrators,
+                updated_at: undated_at,
+                leader: user_id,
+                URLs: URLs,
+                menbers: menbers,
+                tenMenbers: [],
+            }
+            groupsRef.doc(id).set(data, {marge: true})
+                .then(() => {
+                    dispatch(push('/group/home/' + id));
+                })
+                .then(
+                    db.collection('users').doc(user_id).update({groups: [...getState().users.groups, id]})
+                    .then(() => {
+                        const user = getState().users;
+                        console.log(id)
+                        console.log(user)
+                        dispatch(signInAction({
+                            isSignedIn: user.isSignedIn,
+                            role: user.role,
+                            uid: user.id,
+                            username: user.username,
+                            groups: [user.groups, id],
+                            groupName: [...user.groupName, groupName],
+                        }));
+                    }
+                    )
+                );
+        }else{
+            const undated_at = timestamp;
+            const data = {
+                groupName: groupName,
+                groupDescription: groupDescription,
+                updated_at: undated_at,
+                URLs: URLs,
+            }
+            groupsRef.doc(id).update(data)
+                .then(() => {
+                    dispatch(push('/group/home/' + id));
+                }).catch((error) => {
+                    throw new Error(error);
+                })
         }
         dispatch(hideLoadingAction());
 
-        return groupsRef.doc(id).set(data, {marge: true})
-            .then(() => {
-                dispatch(push('/group/home/' + id));
-            }).catch((error) => {
-                throw new Error(error);
-            })
     }
 }
 
