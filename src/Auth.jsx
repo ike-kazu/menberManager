@@ -8,7 +8,6 @@ const Auth = ({children}) => {
 
     const selector = useSelector((state) => state);
     const isSignedIn = getIsSignedIn(selector);
-    console.log(selector)
 
 
     useEffect(() => {

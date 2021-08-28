@@ -3,6 +3,7 @@ import {PrimaryButton, TextField} from '../components/UIkit';
 import {signUp} from '../reducks/users/operations';
 import {useDispatch} from 'react-redux';
 import {push} from 'connected-react-router';
+import { NegativeError } from '../components/UIkit';
 
 const SignUp = () => {
     const dispatch = useDispatch();
@@ -25,6 +26,29 @@ const SignUp = () => {
     const inputConfirmPassword = useCallback( (event) => {
         setConfirmPassword(event.target.value)
     }, [setConfirmPassword]);
+
+
+    // 未入力error
+    const [openError, setOpenError] = useState(false);
+
+    const error = (
+        <NegativeError
+        ErrorTitle={'未入力エラー'}
+        ErrorSentence={'メールアドレス、およびパスワードが入力されていません。'}
+        StrongErrorSentence={''}
+        openError={openError} />
+    );
+
+    // パスが合わないエラー
+    const [openSameError, setOpenSameError] = useState(false);
+
+    const errorSame = (
+        <NegativeError
+        ErrorTitle={'入力エラー'}
+        ErrorSentence={'パスワードが一致していません。'}
+        StrongErrorSentence={''}
+        openError={openSameError} />
+    );
 
     return (
         <div className='c-section-container'>
@@ -50,11 +74,22 @@ const SignUp = () => {
             <div className={'center'}>
                 <PrimaryButton
                     label={'アカウントを登録する'}
-                    onClick={() => dispatch(signUp(username, email, password, confirmPassword))}
+                    onClick={() => {
+                        if(username === '' || email === '' || password === '' || confirmPassword === ''){
+                            setOpenError(true);
+                        }else if(password !== confirmPassword){
+                            setOpenError(false);
+                            setOpenSameError(true);
+                        }else{
+                            dispatch(signUp(username, email, password, confirmPassword))
+                        }
+                    }}
                  />
                  <div className='module-spacer--medium' />
                  <p onClick={() => dispatch(push('/signin'))}>アカウントをお持ちの方はこちら</p>
             </div>
+            {error}
+            {errorSame}
         </div>
     )
 }

@@ -56,7 +56,7 @@ export const listenAuthState = () => {
     }
 }
 
-export const signIn = (email, password) => {
+export const signIn = (email, password, setOpenError, setOpenSameError) => {
 
     const createGroupName = async (groups) => {
         let groupName = [];
@@ -73,7 +73,7 @@ export const signIn = (email, password) => {
 
     return async (dispatch) => {
         if (email === '' || password === ''){
-            alert('必須項目が未入力です');
+            setOpenError(true);
             return false;
         }
         auth.signInWithEmailAndPassword(email, password)
@@ -100,6 +100,10 @@ export const signIn = (email, password) => {
                 }else{
                     dispatch(push('/signin'));
                 }
+            })
+            .catch(() => {
+                setOpenSameError(true);
+                return false;
             })
     }
 }
@@ -139,7 +143,7 @@ export const signUp = (username, email, password, confirmPassword) => {
     }
 }
 
-export const resetPassword = (email) => {
+export const resetPassword = (email, setOpenSameError, set0penClear) => {
     return async (dispatch) => {
         if(email === ''){
             alert('必須項目が未入力です');
@@ -147,10 +151,9 @@ export const resetPassword = (email) => {
         }else{
             auth.sendPasswordResetEmail(email)
                 .then(() => {
-                    alert('入力されたメールアドレスにリセット用のURLを送りました');
-                    dispatch(push('/signin'));
+                    set0penClear(true);
                 }).catch(() => {
-                    alert('パスワードリセットに失敗しました。');
+                    setOpenSameError(true);
                 })
         }
     }
