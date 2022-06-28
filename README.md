@@ -6,6 +6,9 @@
 デプロイしたものはこちらから
 https://ec-app-9e8b4.web.app/
 
+[アカウント]
+メールアドレス：sample1@example.com
+パスワード：sample
 
 
 ## 環境
